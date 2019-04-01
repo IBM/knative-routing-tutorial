@@ -1,0 +1,34 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: helloworld-go
+  namespace: default
+spec:
+  release:
+    # Ordered list of 1 or 2 revisions. 
+    # First revision is traffic target "current"
+    # Second revision is traffic target "candidate"
+    revisions: ["helloworld-go-00001", "helloworld-go-00002"]
+    rolloutPercent: 50 # Percent [0-99] of traffic to route to "candidate" revision
+    configuration:
+      build:
+        apiVersion: build.knative.dev/v1alpha1
+        kind: Build
+        spec:
+          serviceAccountName: build-bot
+          source:
+            git:
+              url: https://github.com/IBM/knative-routing-tutorial.git
+              revision: master
+          template:
+            name: kaniko
+            arguments:
+            - name: IMAGE
+              value: registry.ng.bluemix.net/<NAMESPACE>/helloworld-go:2
+            - name: DOCKERFILE
+              value: /workspace/helloworld2/Dockerfile
+      revisionTemplate:
+        spec:
+          serviceAccountName: build-bot
+          container:
+            image: registry.ng.bluemix.net/<NAMESPACE>/helloworld-go:2
