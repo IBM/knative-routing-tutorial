@@ -294,7 +294,7 @@ After completing the tutorial, click on the `Dashboards` icon and find the `Kube
 It is located in the `Kubernetes` section under `Default Dashboards`.
 When you have opened the dashboard, complete the following steps:
 
-* Click on the options `&#8942;` menu and select the `Copy Dashboard` option.
+* Click on the options <code>&#8942;</code> menu and select the `Copy Dashboard` option.
 * Click the `Copy and Open` button.
 * When the copied dashboard appears, click `Edit Scope`.
 * Select `container.label.io.kubernetes.pod.namespace` in the first drop-down box.
