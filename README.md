@@ -20,8 +20,8 @@ You will need the cluster to complete this lab.
 Complete the following exercises in the workshop if you have not already done so:
 * [Install developer tools (ibmcloud, kubectl, knctl)](https://github.com/IBM/knative101/tree/master/workshop/exercise-0)
 * [Create a Kubernetes cluster on IBM Cloud](https://github.com/IBM/knative101/tree/master/workshop/exercise-1)
-* [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
-* [Install knative and istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-3)
+* [Install knative and istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
+* [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-6)
 
 
 ## Deploy the sample application
@@ -103,15 +103,13 @@ The above output tells us that the service hostname is
 
 The hostname for the service follows this general pattern:
 <br/>
-&nbsp;&nbsp;*service-name*-*service-namespace*.*ingress-subdomain*
+&nbsp;&nbsp;*service name*-*service namespace*.*ingress subdomain*
 
-The *service name* and *service-namespace* are determined from the service yaml file.
-In this case the yaml did not specify a namespace and so the `default` namespace is used.
-
+The *service name* and *service namespace* are determined from the service yaml file.
 The *ingress subdomain* is a public URL providing access to your cluster. 
 You may see a different name depending on what you named your cluster and where it is located.
 
-Now you can curl the helloworld application.  Substitute your service name in the curl command below.
+Now you can curl the helloworld-go application.  Substitute your service name in the curl command below.
 
 ```
 curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
@@ -164,7 +162,7 @@ spec:
 ```
 
 In addition to changing the service's pod configuration to use a different image (the one tagged with `2`),
-this file uses a new `traffic` section to route requests to different revisions.
+this file uses a new `traffic` object to route requests to different revisions.
 In this case we want to divide traffic evenly between the previous revision we created `helloworld-go-simple-response` and the new revision we're creating `helloworld-go-random-response`.
 
 You must edit the helloworld2.yaml file to replace `<REGISTRY>` and `<NAMESPACE>` with the same values as you used earlier.
@@ -228,7 +226,7 @@ kubectl edit ksvc helloworld-go
 ```
 
 An edit window appears containing the service's current yaml definition.
-Find the `traffic` object and change it so that the first revision gets 100% of the requests and the second revision gets 0% of the requests, as shown below.
+Find the `traffic` object (the one under `spec`, not the one under `status`) and change it so that the first revision gets 100% of the requests and the second revision gets 0% of the requests, as shown below.
 
 ```
   traffic:
@@ -241,7 +239,7 @@ Find the `traffic` object and change it so that the first revision gets 100% of 
 ```
 
 Save the updated yaml file and close the edit window.
-All traffic will be routed to the first revision.
+All traffic now will be routed to the first revision.
 
 ```
 $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
@@ -251,7 +249,7 @@ $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us
 Hello Go Sample v1!
 ```
 
-## Roll forward to latest version of the application
+## Roll forward to the latest version of the application
 
 What if testing went well and you want to route all users to the new revision?
 In that case you can edit the service's yaml and change the `traffic` object in any of the following ways:
@@ -265,7 +263,7 @@ In that case you can edit the service's yaml and change the `traffic` object in 
       - latestRevision: false
         percent: 100
         revisionName: helloworld-go-random-response
-        ```
+    ```
 * Change the `traffic` object to route all requests to the latest ready revision.
     ```
       traffic:
@@ -275,7 +273,7 @@ In that case you can edit the service's yaml and change the `traffic` object in 
 * Delete the `traffic` object completely.  This causes knative to route all requests to the latest ready revision.
 
 Save the updated yaml file and close the edit window.
-All traffic will be routed to the latest revision of the service.
+All traffic now will be routed to the latest revision of the service.
 
 ```
 $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
@@ -296,11 +294,11 @@ After completing the tutorial, click on the `Dashboards` icon and find the `Kube
 It is located in the `Kubernetes` section under `Default Dashboards`.
 When you have opened the dashboard, complete the following steps:
 
-* Click on the options (&#8942;) menu and select the `Copy Dashboard` option.
+* Click on the options `&#8942;` menu and select the `Copy Dashboard` option.
 * Click the `Copy and Open` button.
 * When the copied dashboard appears, click `Edit Scope`.
 * Select `container.label.io.kubernetes.pod.namespace` in the first drop-down box.
-* In the value box, select or type in `Default`.
+* Select or type in `Default` in the value box.
 * Click `Save`.
 
 In a separate shell, run a loop of curl requests to the `helloworld-go` service as follows.
@@ -310,7 +308,7 @@ for i in `seq 1 5000`; do curl helloworld-go.default.mycluster6.us-south.contain
 ```
 
 Assuming that the Knative service is still set to route all requests to the latest revision,
-the dashboard should show all requests going to `helloworld-go-random-response` revision.
+the dashboard should show all requests going to the `helloworld-go-random-response` revision.
 (You may have to click on the `10M` or `1M` button at the bottom of the window to see recent data.)
 
 ![sysdig](doc/source/images/sysdig1.png)
