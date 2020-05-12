@@ -15,14 +15,15 @@ In this tutorial you'll learn how to:
 ## Prerequistes
 
 This tutorial assumes that you have completed the [Knative Workshop](https://github.com/IBM/knative101/tree/master/workshop),
-which introduces the basic Knative concepts and provides instructions for creating an IBM Kubernetes Service cluster and installing Knative.
-You will need the cluster to complete this lab.
+which introduces the basic Knative concepts and provides instructions for creating an IBM Cloud Kubernetes Service cluster and installing Knative.
+You will need the cluster to complete this tutorial.
 Complete the following exercises in the workshop if you have not already done so:
 * [Install developer tools (ibmcloud, kubectl, knctl)](https://github.com/IBM/knative101/tree/master/workshop/exercise-0)
 * [Create a Kubernetes cluster on IBM Cloud](https://github.com/IBM/knative101/tree/master/workshop/exercise-1)
 * [Install knative and istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
 * [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-6)
-* [Install Docker](https://docs.docker.com/get-docker/)
+
+Also you need to have [Docker](https://docs.docker.com/get-docker/) installed.
 
 
 ## Deploy the sample application
@@ -80,7 +81,7 @@ spec:
 The configuration of the service is called a **revision**.
 This revision is given the name `helloworld-go-simple-response`.
 
-You must edit the helloworld1.yaml file to replace `<REGISTRY>` and `<NAMESPACE>` with the same values as you did when you pushed the image.
+You must edit the helloworld1.yaml file to replace `<REGISTRY>` and `<NAMESPACE>` with the same values as you used when you pushed the image.
 After you do that, apply the helloworld1.yaml file to your cluster.
 
 ```
@@ -137,7 +138,7 @@ docker tag helloworld:2 <REGISTRY>/<NAMESPACE>/helloworld-go:2
 docker push <REGISTRY>/<NAMESPACE>/helloworld-go:2
 ```
 
-We could just deploy the new version, completely replacing the old version of the application.
+We could just deploy the new version, by completely replacing the old version of the application.
 However at a certain point you may want to do a more gradual roll out of a new function to users.
 This can be done by adding a `traffic` object to the service yaml file.
 
@@ -220,6 +221,7 @@ Hello and have a super day!
 
 The use of `tag` is optional.
 
+
 ## Roll back to an earlier version of the application
 
 What if you discover during your roll out testing that there's something wrong with the new revision of your service and you don't want to route users to it?
@@ -252,6 +254,7 @@ Hello Go Sample v1!
 $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
 Hello Go Sample v1!
 ```
+
 
 ## Roll forward to the latest version of the application
 
@@ -287,6 +290,7 @@ $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us
 Hello and have a super day!
 ```
 
+
 ## Monitoring traffic using IBM Cloud Monitoring with Sysdig
 
 You can use IBM Cloud Monitoring with Sysdig to observe traffic being routed to different revisions.
@@ -308,7 +312,7 @@ When you have opened the dashboard, complete the following steps:
 In a separate shell, run a loop of curl requests to the `helloworld-go` service as follows.
 
 ```
-for i in `seq 1 5000`; do curl helloworld-go.default.mycluster6.us-south.containers.appdomain.cloud; done
+for i in `seq 1 5000`; do curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud; done
 ```
 
 Assuming that the Knative service is still set to route all requests to the latest revision,
