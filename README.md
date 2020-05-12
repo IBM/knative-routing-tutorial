@@ -20,7 +20,7 @@ You will need the cluster to complete this tutorial.
 Complete the following exercises in the workshop if you have not already done so:
 * [Install developer tools (ibmcloud, kubectl, knctl)](https://github.com/IBM/knative101/tree/master/workshop/exercise-0)
 * [Create a Kubernetes cluster on IBM Cloud](https://github.com/IBM/knative101/tree/master/workshop/exercise-1)
-* [Install knative and istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
+* [Install Knative and Istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
 * [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-6)
 
 Also you need to have [Docker](https://docs.docker.com/get-docker/) installed.
