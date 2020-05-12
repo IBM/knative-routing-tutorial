@@ -22,6 +22,7 @@ Complete the following exercises in the workshop if you have not already done so
 * [Create a Kubernetes cluster on IBM Cloud](https://github.com/IBM/knative101/tree/master/workshop/exercise-1)
 * [Install knative and istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
 * [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-6)
+* [Install Docker](https://docs.docker.com/get-docker/)
 
 
 ## Deploy the sample application
@@ -42,11 +43,14 @@ cd knative-routing-tutorial
 ```
 
 Build the first version of the helloworld-go sample program in the `helloworld1` directory and push it to your container registry.
-You will need to replace `<REGISTRY>` with the domain name of your container registry (e.g. `us.icr.io`)
-and `<NAMESPACE>` with the name of your namespace in the registry that you created in the Knative lab.
 Note that the image is given the tag `1` to indicate the first version of the program.
+You will need to substitute the following values in these commands:
+* `<APIKEY>` - the API key that you created in the Knative lab to access your registry.
+* `<REGISTRY>` - the domain name of your container registry (e.g. `us.icr.io`).
+* `<NAMESPACE>` - the name of your namespace in the registry that you created in the Knative lab.
 
 ```
+docker login -u iamapikey -p <APIKEY> <REGISTRY>
 docker build -f Dockerfile helloworld1 -t helloworld-go:1
 docker tag helloworld:1 <REGISTRY>/<NAMESPACE>/helloworld-go:1
 docker push <REGISTRY>/<NAMESPACE>/helloworld-go:1
