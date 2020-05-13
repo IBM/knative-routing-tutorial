@@ -7,18 +7,18 @@ This tutorial focuses on these traffic management capabilities of Knative.
 
 ## Objectives
 
-In this tutorial you'll learn how to:
+In this tutorial, you'll learn how to:
 * Roll out a new revision of an application.
 * Roll back to an earlier revision of an application.
 
 
 ## Prerequistes
 
-This tutorial assumes that you have completed the [Knative Workshop](https://github.com/IBM/knative101/tree/master/workshop),
+This tutorial assumes that you completed the [Knative 101 Labs](https://github.com/IBM/knative101/tree/master/workshop),
 which introduces the basic Knative concepts and provides instructions for creating an IBM Cloud Kubernetes Service cluster and installing Knative.
 You will need the cluster to complete this tutorial.
-Complete the following exercises in the workshop if you have not already done so:
-* [Install developer tools (ibmcloud, kubectl, knctl)](https://github.com/IBM/knative101/tree/master/workshop/exercise-0)
+Complete the following exercises if you have not already:
+* [Install developer tools (ibmcloud, kubectl, kn)](https://github.com/IBM/knative101/tree/master/workshop/exercise-0)
 * [Create a Kubernetes cluster on IBM Cloud](https://github.com/IBM/knative101/tree/master/workshop/exercise-1)
 * [Install Knative and Istio on your cluster](https://github.com/IBM/knative101/tree/master/workshop/exercise-2)
 * [Set up your private container registry](https://github.com/IBM/knative101/tree/master/workshop/exercise-6)
@@ -30,7 +30,7 @@ Also you need to have [Docker](https://docs.docker.com/get-docker/) installed.
 
 A user can work with Knative in two different ways:
 * By managing the low-level Knative resources (route, configuration, etc.) directly.
-* By managing the high-level Knative service resource and letting Knative managed the underlying low-level resources.
+* By managing the high-level Knative service resource and letting Knative manage the underlying low-level resources.
 
 For the purpose of getting started and keeping things simple, let's assume that we are using the latter approach.
 
@@ -120,7 +120,7 @@ Now you can curl the helloworld-go application.  Substitute your service name in
 curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
 ```
 
-You should see a response message `Hello Go Sample v1!`
+You should see a response message, `Hello Go Sample v1!`
 
 
 ## Roll out of a new version of the application
@@ -139,7 +139,7 @@ docker push <REGISTRY>/<NAMESPACE>/helloworld-go:2
 ```
 
 We could just deploy the new version, by completely replacing the old version of the application.
-However at a certain point you may want to do a more gradual roll out of a new function to users.
+However, at a certain point you may want to do a more gradual roll out of a new function to users.
 This can be done by adding a `traffic` object to the service yaml file.
 
 Here is the next yaml file we will use, [helloworld2.yaml](helloworld2.yaml).
@@ -177,28 +177,36 @@ After you do that, apply the helloworld2.yaml file to your cluster.
 kubectl apply -f helloworld2.yaml
 ```
 
-Watch for the new revision to become ready using `kubectl get ksvc helloworld-go` as before.
-When it is, confirm that the route is splitting traffic between the two revisions using
+Watch for the new revision to become ready by using `kubectl get ksvc helloworld-go` as before.
+When it is, confirm that the route is splitting traffic between the two revisions by using
 
 ```
-knctl route list
+kn route describe helloworld-go
 ```
 
 You should see something like this:
 
 ```
-Routes in namespace 'default'
+Name:       helloworld-go
+Namespace:  default
+Age:        10m
+URL:        http://helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
+Service:    helloworld-go
 
-Name           Domain  Traffic                               Annotations  Conditions  Age
-helloworld-go  -       50% -> helloworld-go-simple-response  -            3 OK / 3    3d
-                       50% -> helloworld-go-random-response
+Traffic Targets:  
+   50%  helloworld-go-simple-response #current
+        URL:  http://current-helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
+   50%  helloworld-go-random-response #latest
+        URL:  http://latest-helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
 
-1 routes
-
-Succeeded
+Conditions:  
+  OK TYPE                  AGE REASON
+  ++ Ready                  3m 
+  ++ AllTrafficAssigned     10m
+  ++ IngressReady           3m 
 ```
 
-Try using curl again several times and you should see the response you saw from the first version and some new responses from the second version.
+Try using `curl` again several times and you should see the response you saw from the first version and some new responses from the second version.
 
 ```
 $ curl helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
@@ -213,9 +221,9 @@ In the yaml file we used the tag `current` for the original revision and `latest
 You can prefix these tags to the service's domain name if you need to try out a specific revision.
 
 ```
-$ curl current.helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
+$ curl current-helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
 Hello Go Sample v1!
-$ curl candidate.helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
+$ curl latest-helloworld-go-default.mycluster6-f2c6cdc6801be85fd188b09d006f13e3-0000.us-south.containers.appdomain.cloud
 Hello and have a super day!
 ```
 
@@ -293,7 +301,7 @@ Hello and have a super day!
 
 ## Monitoring traffic using IBM Cloud Monitoring with Sysdig
 
-You can use IBM Cloud Monitoring with Sysdig to observe traffic being routed to different revisions.
+We can use IBM Cloud Monitoring with Sysdig to observe traffic being routed to different revisions.
 
 Please see [this tutorial](https://cloud.ibm.com/docs/Monitoring-with-Sysdig?topic=Sysdig-getting-started)
 for instructions on provisioning an instance of IBM Cloud Monitoring with Sysdig and configuring your cluster to work with it.
