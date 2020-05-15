@@ -13,7 +13,7 @@ var words = []string{"fantastic", "wonderful", "super"}
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	log.Print("Hello world received a request.")
-    rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 	fmt.Fprintf(w, "Hello and have a %s day!\n", words[rand.Intn(len(words))])
 }
 
